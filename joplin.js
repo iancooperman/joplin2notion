@@ -6,7 +6,6 @@ class Joplin {
     constructor(joplinToken, joplinPort) {
         this.token = joplinToken
         this.port = joplinPort
-        console.log(this.port)
 
         this.getNotesFromNotebook.bind(this)
     }
@@ -18,24 +17,30 @@ class Joplin {
     async getNotesFromNotebook(notebookID, fields) {
         const fieldsString = fields.join()
 
-        let tempURL = "http://localhost:" + this.port + "/folders/" + notebookID + "/notes"
-        console.log(tempURL)
-        let foldersURL = new URL(tempURL)
-        foldersURL.searchParams.append("token", this.token)
-        foldersURL.searchParams.append("fields", fieldsString)
-    
-        const res = await fetch(foldersURL.href)
-        const data = await res.json()
+        let items = []
+        let pageNum = 1 
+        let data = null
+
+        do {
+            let tempURL = "http://localhost:" + this.port + "/folders/" + notebookID + "/notes"
+            let foldersURL = new URL(tempURL)
+            foldersURL.searchParams.append("token", this.token)
+            foldersURL.searchParams.append("fields", fieldsString)
+            foldersURL.searchParams.append("page", pageNum)
         
-        return data
+            const res = await fetch(foldersURL.href)
+            data = await res.json()
+            items = items.concat(data.items)
+
+            pageNum++
+        }
+        while (data.has_more)
+        
+        return items
     }
 }
 
 
 let joplin = new Joplin(process.env.JOPLIN_TOKEN, process.env.JOPLIN_CLIPPER_PORT)
-
-
-
-
 joplin.getNotesFromNotebook(process.env.JOPLIN_NOTEBOOK_ID, ["id", "title", "body", "created_time", "latitude", "longitude", "altitude", "is_todo", "todo_due", "todo_completed"])
     .then(res => console.log(res))
