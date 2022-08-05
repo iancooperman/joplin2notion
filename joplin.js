@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import 'dotenv/config'
 
-
+// This class is used to interact with the Joplin Data API. It provides a method for getting notes from a specified notebook, using the notebook's ID. The fields parameter specifies which fields to include in the response.
 class Joplin {
     constructor(joplinToken, joplinPort) {
         this.token = joplinToken
@@ -40,7 +40,4 @@ class Joplin {
     }
 }
 
-
-let joplin = new Joplin(process.env.JOPLIN_TOKEN, process.env.JOPLIN_CLIPPER_PORT)
-joplin.getNotesFromNotebook(process.env.JOPLIN_NOTEBOOK_ID, ["id", "title", "body", "created_time", "latitude", "longitude", "altitude", "is_todo", "todo_due", "todo_completed"])
-    .then(res => console.log(res))
+export default Joplin
