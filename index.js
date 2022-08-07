@@ -2,6 +2,7 @@
 import 'dotenv/config'
 import { Client } from '@notionhq/client'
 import Joplin from './joplin.js'
+import render from './joplinToNotionFormatting.js'
 
 const joplin = new Joplin(process.env.JOPLIN_TOKEN, process.env.JOPLIN_CLIPPER_PORT)
 const notion = new Client({auth: process.env.NOTION_TOKEN});
@@ -13,7 +14,8 @@ const notionDatabaseID = process.env.NOTION_DATABASE_ID;
 async function processNotes() {
     const data = await joplin.getNotesFromNotebook(joplinNotebookID, ["title", "body", "created_time", "updated_time"])
     for (let note of data) {
-        addPageToNotionDatabase(notionDatabaseID, note.title, note.body)
+        render(note.body)
+        // addPageToNotionDatabase(notionDatabaseID, note.title, note.body)
     }
 }
 
